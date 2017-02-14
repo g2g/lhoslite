@@ -1,2 +1,1 @@
-# lhoslite
-Don't use me
+# Don't use me
