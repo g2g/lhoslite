@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e -u
+set -e -u -x
 
 iso_name=lhos
 iso_label="LHOS_$(date +%Y%m)"
