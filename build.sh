@@ -8,7 +8,7 @@ iso_version=$(date +%Y.%m.%d)
 install_dir=arch
 work_dir=work
 out_dir=out
-gpg_key=
+#gpg_key=
 
 arch=$(uname -m)
 verbose=""
@@ -80,15 +80,16 @@ make_setup_mkinitcpio() {
     cp /usr/lib/initcpio/install/archiso_kms ${work_dir}/${arch}/airootfs/etc/initcpio/install
     cp /usr/lib/initcpio/archiso_shutdown ${work_dir}/${arch}/airootfs/etc/initcpio
     cp ${script_path}/mkinitcpio.conf ${work_dir}/${arch}/airootfs/etc/mkinitcpio-archiso.conf
-    gnupg_fd=
-    if [[ ${gpg_key} ]]; then
-      gpg --export ${gpg_key} >${work_dir}/gpgkey
-      exec 17<>${work_dir}/gpgkey
-    fi
-    ARCHISO_GNUPG_FD=${gpg_key:+17} setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r 'mkinitcpio -c /etc/mkinitcpio-archiso.conf -k /boot/vmlinuz-linux -g /boot/archiso.img' run
-    if [[ ${gpg_key} ]]; then
-      exec 17<&-
-    fi
+#   gnupg_fd=
+#   if [[ ${gpg_key} ]]; then
+#     gpg --export ${gpg_key} >${work_dir}/gpgkey
+#     exec 17<>${work_dir}/gpgkey
+#   fi
+#   ARCHISO_GNUPG_FD=${gpg_key:+17} setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r 'mkinitcpio -c /etc/mkinitcpio-archiso.conf -k /boot/vmlinuz-linux -g /boot/archiso.img' run
+    setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${work_dir}/pacman.conf" -D "${install_dir}" -r 'mkinitcpio -c /etc/mkinitcpio-archiso.conf -k /boot/vmlinuz-linux -g /boot/archiso.img' run
+#   if [[ ${gpg_key} ]]; then
+#     exec 17<&-
+#   fi
 }
 
 # Customize installation (airootfs)
@@ -206,7 +207,8 @@ make_efiboot() {
 make_prepare() {
     cp -a -l -f ${work_dir}/${arch}/airootfs ${work_dir}
     setarch ${arch} mkarchiso ${verbose} -w "${work_dir}" -D "${install_dir}" pkglist
-    setarch ${arch} mkarchiso ${verbose} -w "${work_dir}" -D "${install_dir}" ${gpg_key:+-g ${gpg_key}} prepare
+#   setarch ${arch} mkarchiso ${verbose} -w "${work_dir}" -D "${install_dir}" ${gpg_key:+-g ${gpg_key}} prepare
+    setarch ${arch} mkarchiso ${verbose} -w "${work_dir}" -D "${install_dir}" prepare
     rm -rf ${work_dir}/airootfs
     # rm -rf ${work_dir}/${arch}/airootfs (if low space, this helps)
 }
@@ -234,7 +236,7 @@ while getopts 'N:V:L:D:w:o:g:vh' arg; do
         D) install_dir="${OPTARG}" ;;
         w) work_dir="${OPTARG}" ;;
         o) out_dir="${OPTARG}" ;;
-        g) gpg_key="${OPTARG}" ;;
+#       g) gpg_key="${OPTARG}" ;;
         v) verbose="-v" ;;
         h) _usage 0 ;;
         *)
